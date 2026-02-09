@@ -1,0 +1,5 @@
+Acceptance criteria for the user story is well-defined and understood by the team.
+Team members have developed code which follows the criteria.
+Code has been tested and reviewed by peers for no outstanding bugs.
+Relevant Documentation and comments have been added/updated.
+Code has been merged into the main branch.
