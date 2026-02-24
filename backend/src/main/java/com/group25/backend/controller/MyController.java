@@ -1,7 +1,7 @@
 package com.group25.backend.controller;
 
-import com.group25.skillsbuild_app.model.User;
-import com.group25.skillsbuild_app.repo.UserRepository;
+import com.group25.backend.model.User;
+import com.group25.backend.repo.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

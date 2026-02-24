@@ -1,5 +1,5 @@
 package com.group25.backend.repo;
-import com.group25.skillsbuild_app.model.User;
+import com.group25.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
