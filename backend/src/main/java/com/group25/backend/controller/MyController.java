@@ -1,4 +1,4 @@
-package com.group25.skillsbuild_app.controller;
+package com.group25.backend.controller;
 
 import com.group25.skillsbuild_app.model.User;
 import com.group25.skillsbuild_app.repo.UserRepository;
