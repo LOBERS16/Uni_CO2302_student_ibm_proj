@@ -1,4 +1,4 @@
-package com.group25.skillsbuild_app.model;
+package com.group25.backend.model;
 import jakarta.persistence.*;
 
 @Entity
