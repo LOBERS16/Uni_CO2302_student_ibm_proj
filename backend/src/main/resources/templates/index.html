@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IBM SkillsBuild Course Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .header {
+            background: #0f62ac;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-primary { background: #0f62ac; color: white; }
+        .btn-warning { background: #ffc107; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .course-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .course-card.active { border-color: #28a745; }
+        .course-card.paused { border-color: #ffc107; }
+        .timer {
+            font-size: 24px;
+            font-family: monospace;
+            text-align: center;
+            margin: 15px 0;
+            color: #0f62ac;
+        }
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        .status-ACTIVE { background: #d4edda; color: #155724; }
+        .status-PAUSED { background: #fff3cd; color: #856404; }
+        .status-COMPLETED { background: #e2e3e5; color: #383d41; }
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>📚 IBM SkillsBuild Course Tracker</h1>
+    <p>Start, Pause, Resume, and Complete your courses</p>
+</div>
+
+<div class="form-section">
+    <h2>Start New Course</h2>
+    <form action="/course/start" method="post">
+        <div class="form-group">
+            <label>Course Name:</label>
+            <input type="text" name="name" placeholder="e.g., Data Science" required>
+        </div>
+        <div class="form-group">
+            <label>Course ID (optional):</label>
+            <input type="text" name="courseId" placeholder="e.g., DS-101">
+        </div>
+        <button type="submit" class="btn btn-primary">▶ Start Course</button>
+    </form>
+</div>
+
+<h2>Current Courses</h2>
+<div class="course-grid" th:if="${not #lists.isEmpty(activeCourses)}">
+    <div class="course-card" th:each="course : ${activeCourses}"
+         th:classappend="${course.status.name().toLowerCase()}">
+        <h3 th:text="${course.name}">Course Name</h3>
+        <span class="course-id" th:if="${course.courseId}" th:text="${course.courseId}">ID</span>
+        <div>
+                <span class="status" th:classappend="'status-' + ${course.status.name()}"
+                      th:text="${course.status.name()}">Status</span>
+        </div>
+        <div class="timer" th:text="${course.formattedTime}">00:00:00</div>
+
+        <div>
+            <form th:if="${course.status.name() == 'ACTIVE'}"
+                  th:action="@{/course/{id}/pause(id=${course.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-warning">⏸ Pause</button>
+            </form>
+            <form th:if="${course.status.name() == 'PAUSED'}"
+                  th:action="@{/course/{id}/resume(id=${course.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success">▶ Resume</button>
+            </form>
+            <form th:if="${course.status.name() != 'COMPLETED'}"
+                  th:action="@{/course/{id}/complete(id=${course.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">✓ Complete</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:if="${#lists.isEmpty(activeCourses)}">
+    <p>No active courses. Start learning!</p>
+</div>
+
+<h2>Course History</h2>
+<table th:if="${not #lists.isEmpty(allCourses)}">
+    <thead>
+    <tr>
+        <th>Course Name</th>
+        <th>Course ID</th>
+        <th>Status</th>
+        <th>Time Spent</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="course : ${allCourses}">
+        <td th:text="${course.name}">Name</td>
+        <td th:text="${course.courseId} ?: '-'">ID</td>
+        <td>
+                    <span class="status" th:classappend="'status-' + ${course.status.name()}"
+                          th:text="${course.status.name()}">Status</span>
+        </td>
+        <td th:text="${course.formattedTime}">00:00:00</td>
+    </tr>
+    </tbody>
+</table>
+<div th:if="${#lists.isEmpty(allCourses)}">
+    <p>No courses yet.</p>
+</div>
+</body>
+</html>
