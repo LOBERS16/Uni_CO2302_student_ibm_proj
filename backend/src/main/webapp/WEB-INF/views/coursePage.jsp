@@ -60,15 +60,50 @@
     </head>
 <body>
 <div class="container">
-    <a href="${pageContext.request.contextPath}/dashboard" class="back-btn">Back to dashboard</a>
-    <h2>IBM skillsBuild Categories are shown below:</h2>
+    <a href="${pageContext.request.contextPath}/dashboard" class="back-btn">Go back to dashboard</a>
+    <h2>Here are the IBM skillsbuild categories to choose from:</h2>
     <div class="category-grid">
         <a href="https://skillsbuild.org/students/course-catalog/artificial-intelligence" target="_blank" style="text-decoration: none; color: inherit;">
         <div class="course_button">
         <h3>Artificial Intelligence</h3>
-        <p>Learn the basics of this technology and start building your skills in the AI and machine learning.</p>
+        <p>Learn the basics of this technology and start building your skills in the AI and machine learning here:</p>
         </div>
         </a>
+
+    <a href="https://skillsbuild.org/students/course-catalog/blockchain" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="course_button">
+        <h3>Blockchain</h3>
+        <p>Explore blockchain technology, a foundational technology for cryptocurrency. Transform your digital transaction knowledge here: </p>
+
+    </div>
+    </a>
+    <a href="https://skillsbuild.org/students/course-catalog/cloud-computing" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="course_button">
+            <h3>Cloud Computing</h3>
+            <p>Discover cloud computing, a core technology behind photos,apps and music. Learn the invisible infrastructure that powers these digital services here: </p>
+        </div>
+    </a>
+
+    <a href="https://skillsbuild.org/students/course-catalog/cybersecurity" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="course_button">
+            <h3>Cyber Security</h3>
+            <p>Learn the basics of cybersecurity and why it's such a growing career field, while building skills and insights into the world of digital security.</p>
+        </div>
+    </a>
+    <a href="https://skillsbuild.org/students/course-catalog/data-science"target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="course_button">
+            <h3>Data Science</h3>
+            <p>Learn how companies collect massive amounts of data created online and understand the data science to become an informed digital consumer</p>
+
+        </div>
+    </a>
+    <a href="https://skillsbuild.org/students/course-catalog/emerging-tech-intro" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="course_button">
+            <h3>Emerging Tech Intro</h3>
+            <p> if you are unsure with what to start learning in the tech realm starting with Explore Emerging Tech is a great way to provide an introduction to six emerging technologies powering today's jobs.</p>
+        </div>
+    </a>
+    </a>
     </div>
 
 </div>
