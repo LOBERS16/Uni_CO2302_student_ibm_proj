@@ -14,6 +14,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
     private String role;
+    private int points = 0;
 
     public User() {}
     public User(String username, String password, String email, String role) {
@@ -52,6 +53,12 @@ public class User {
     }
     public String getRole() {
         return role;
+    }
+    public int getPoints() {
+        return points;
+    }
+    public void setPoints(int points) {
+        this.points = points;
     }
 
 }

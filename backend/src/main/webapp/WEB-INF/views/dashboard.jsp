@@ -175,7 +175,7 @@
         <div class="menu_Card">
             <h3>Support</h3>
             <p>Get help on any issues</p>
-            <a href="">Leave Feedback</a>
+            <a href="${pageContext.request.contextPath}/feedback">Leave Feedback</a>
         </div>
     </div>
 </div>
