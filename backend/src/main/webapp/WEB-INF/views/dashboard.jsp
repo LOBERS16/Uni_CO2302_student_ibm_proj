@@ -169,7 +169,7 @@
         <div class="menu_Card">
             <h3>Account</h3>
             <p>Manage your profile and view your achievements</p>
-            <a href="">Manage Profile</a>
+            <a href="${pageContext.request.contextPath}/profile">Manage Profile</a>
         </div>
 
         <div class="menu_Card">
