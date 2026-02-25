@@ -215,8 +215,6 @@ public class MyController {
                                 @RequestParam(required = false) String subject,
                                 @RequestParam(required = false) String message,
                                 Model model) {
-        // TODO: In a real app, save feedback to database
-        // For now, just show success message
         model.addAttribute("success", "Thank you for your feedback! We appreciate your input.");
         return "feedback";
     }
