@@ -109,6 +109,69 @@ public class MyController {
         return "dashboard";   // loads dashboard.jsp
     }
 
+    // Profile page - display current user profile
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", user);
+        return "profile";  // loads profile.jsp
+    }
+
+    // Handle profile update POST
+    @PostMapping("/profile")
+    public String updateProfile(HttpSession session,
+                               @RequestParam(required = false) String username,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String password,
+                               Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // Update username if provided and not blank
+        if (username != null && !username.trim().isEmpty()) {
+            if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
+                model.addAttribute("user", user);
+                model.addAttribute("error", "Username already exists");
+                return "profile";
+            }
+            user.setUsername(username);
+        }
+
+        // Update email if provided and not blank
+        if (email != null && !email.trim().isEmpty()) {
+            if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
+                model.addAttribute("user", user);
+                model.addAttribute("error", "Email already exists");
+                return "profile";
+            }
+            user.setEmail(email);
+        }
+
+        // Update password if provided and not blank
+        if (password != null && !password.trim().isEmpty()) {
+            if (password.length() < 6) {
+                model.addAttribute("user", user);
+                model.addAttribute("error", "Password must be at least 6 characters");
+                return "profile";
+            }
+            String hashed_Password = passwordEncoder.encode(password);
+            user.setPassword(hashed_Password);
+        }
+
+        // Save updated user
+        userRepository.save(user);
+        session.setAttribute("user", user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("success", "Profile updated successfully!");
+        return "profile";
+    }
+
     // Logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
