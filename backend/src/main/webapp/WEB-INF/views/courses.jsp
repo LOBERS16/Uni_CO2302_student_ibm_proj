@@ -11,9 +11,12 @@
 
 <div style="padding:8px;border:1px solid #ccc;margin-bottom:12px;">
     <strong>${menuState}</strong>
+    <span style="float:right;">
+        Points: <strong id="pointsTotal">${points}</strong>
+    </span>
 </div>
 
-<form method="get" action="${pageContext.request.contextPath}/courses">
+<form method="get" action="${pageContext.request.contextPath}/courses_list">
     <input type="text" name="searchText" placeholder="Search code or title" value="${searchText}" />
 
     <select name="category">
@@ -26,7 +29,7 @@
     <input type="number" name="maxDurationMins" placeholder="Max duration (mins)" value="${maxDurationMins}" min="1" />
 
     <button type="submit">Search</button>
-    <a href="${pageContext.request.contextPath}/courses">Reset</a>
+    <a href="${pageContext.request.contextPath}/courses_list">Reset</a>
 </form>
 
 <hr/>
@@ -38,6 +41,7 @@
         <th>Category</th>
         <th>Duration (mins)</th>
         <th>Languages</th>
+        <th>Done</th>
     </tr>
 
     <c:forEach var="course" items="${courses}">
@@ -47,13 +51,46 @@
             <td>${course.category}</td>
             <td>${course.durationMins}</td>
             <td>${course.languages}</td>
+
+            <td style="text-align:center;">
+                <input
+                        type="checkbox"
+                        class="courseTick"
+                        data-code="${course.code}"
+                        <c:if test="${selectedCodes.contains(course.code)}">checked</c:if>
+                />
+            </td>
         </tr>
     </c:forEach>
 
     <c:if test="${empty courses}">
-        <tr><td colspan="5">No courses found.</td></tr>
+        <tr><td colspan="6">No courses found.</td></tr>
     </c:if>
 </table>
+
+<script>
+    const totalEl = document.getElementById("pointsTotal");
+
+    document.querySelectorAll(".courseTick").forEach(cb => {
+        cb.addEventListener("change", async () => {
+            const code = cb.dataset.code;
+            const checked = cb.checked;
+
+            const form = new URLSearchParams();
+            form.append("code", code);
+            form.append("checked", checked);
+
+            const resp = await fetch("${pageContext.request.contextPath}/courses_list/tick", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: form.toString()
+            });
+
+            const newTotal = await resp.text();
+            totalEl.textContent = newTotal;
+        });
+    });
+</script>
 
 </body>
 </html>

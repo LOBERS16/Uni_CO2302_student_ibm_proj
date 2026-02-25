@@ -1,5 +1,10 @@
 package com.group25.backend.controller;
 
+// temp transfer data
+import com.group25.backend.service.TempCourseSelectionStore;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.group25.backend.model.Course;
 import com.group25.backend.service.CourseCatalog;
 import org.springframework.stereotype.Controller;
@@ -16,12 +21,14 @@ import java.util.Locale;
 public class CourseController {
 
     private final CourseCatalog courseCatalog;
+    private final TempCourseSelectionStore selectionStore;
 
-    public CourseController(CourseCatalog courseCatalog) {
+    public CourseController(CourseCatalog courseCatalog, TempCourseSelectionStore selectionStore) {
         this.courseCatalog = courseCatalog;
+        this.selectionStore = selectionStore;
     }
 
-    @GetMapping("/courses")
+    @GetMapping("/courses_list")
     public String courses(
             @RequestParam(required = false) String searchText,
             @RequestParam(required = false) String category,
@@ -52,6 +59,10 @@ public class CourseController {
         model.addAttribute("searchText", searchText);
         model.addAttribute("category", category);
         model.addAttribute("maxDurationMins", maxDurationMins);
+
+        // temp point score
+        model.addAttribute("points", selectionStore.getPoints());
+        model.addAttribute("selectedCodes", selectionStore.getSelectedCodes());
 
         model.addAttribute("categories", List.of(
                 "Artificial Intelligence",
@@ -89,5 +100,18 @@ public class CourseController {
 
     private String safeAny(String text) {
         return (text == null || text.trim().isEmpty()) ? "Any" : text.trim();
+    }
+
+    @PostMapping("/courses_list/tick")
+    @ResponseBody
+    public int tickCourse(@RequestParam String code, @RequestParam boolean checked) {
+        selectionStore.setSelected(code, checked);
+
+        int points = selectionStore.getPoints();
+        System.out.println("[TICK] code=" + code + " checked=" + checked
+                + " | points=" + points
+                + " | selected=" + selectionStore.getSelectedCodes());
+
+        return points;
     }
 }
