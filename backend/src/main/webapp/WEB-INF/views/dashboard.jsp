@@ -135,7 +135,7 @@
         <a href="${pageContext.request.contextPath}/dashboard">Home</a>
 
         <%-- Maybe we can link courses to the courses page or just straight to ibm? Should test and approve --%>
-        <a href="${pageContext.request.contextPath}/courses">Courses</a>
+        <a href="${pageContext.request.contextPath}/courses_list">Courses</a>
         <a href="">My progress</a>
     </div>
     <div class="user_section">

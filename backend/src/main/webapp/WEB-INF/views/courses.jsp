@@ -7,8 +7,13 @@
 </head>
 <body>
 
-<h2>Course Hub</h2>
-
+<h2 style="margin:0 0 12px 0;">
+    <a href="${pageContext.request.contextPath}/dashboard"
+       style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:6px;
+              text-decoration:none; color:inherit; background:#f7f7f7;">
+        Course Hub
+    </a>
+</h2>
 <div style="padding:8px;border:1px solid #ccc;margin-bottom:12px;">
     <strong>${menuState}</strong>
     <span style="float:right;">
