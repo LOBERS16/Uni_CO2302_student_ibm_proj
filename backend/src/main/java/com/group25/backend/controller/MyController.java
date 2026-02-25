@@ -41,6 +41,14 @@ public class MyController {
         }
         return "register";
     }
+    @GetMapping("/courses")
+    public String courses(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        return "coursePage";
+    }
 
     // Handle register POST
     @PostMapping("/register")
