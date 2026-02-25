@@ -2,6 +2,7 @@ package com.group25.backend.controller;
 
 import com.group25.backend.model.User;
 import com.group25.backend.repo.UserRepository;
+import com.group25.backend.service.TempCourseSelectionStore;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MyController {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TempCourseSelectionStore courseSelectionStore;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // Redirect
@@ -125,6 +128,7 @@ public class MyController {
             return "redirect:/login";
         }
         model.addAttribute("user", user);
+        model.addAttribute("points", courseSelectionStore.getPoints());
         return "profile";  // loads profile.jsp
     }
 
@@ -144,6 +148,7 @@ public class MyController {
         if (username != null && !username.trim().isEmpty()) {
             if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
                 model.addAttribute("user", user);
+                model.addAttribute("points", courseSelectionStore.getPoints());
                 model.addAttribute("error", "Username already exists");
                 return "profile";
             }
@@ -154,6 +159,7 @@ public class MyController {
         if (email != null && !email.trim().isEmpty()) {
             if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
                 model.addAttribute("user", user);
+                model.addAttribute("points", courseSelectionStore.getPoints());
                 model.addAttribute("error", "Email already exists");
                 return "profile";
             }
@@ -164,6 +170,7 @@ public class MyController {
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
                 model.addAttribute("user", user);
+                model.addAttribute("points", courseSelectionStore.getPoints());
                 model.addAttribute("error", "Password must be at least 6 characters");
                 return "profile";
             }
@@ -176,6 +183,7 @@ public class MyController {
         session.setAttribute("user", user);
 
         model.addAttribute("user", user);
+        model.addAttribute("points", courseSelectionStore.getPoints());
         model.addAttribute("success", "Profile updated successfully!");
         return "profile";
     }
@@ -185,5 +193,31 @@ public class MyController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    // Support page
+    @GetMapping("/support")
+    public String support() {
+        return "support";  // loads support.jsp
+    }
+
+    // Feedback page - GET (show form)
+    @GetMapping("/feedback")
+    public String feedbackForm() {
+        return "feedback";  // loads feedback.jsp
+    }
+
+    // Feedback submission - POST
+    @PostMapping("/feedback")
+    public String submitFeedback(HttpSession session,
+                                @RequestParam(required = false) String name,
+                                @RequestParam(required = false) String email,
+                                @RequestParam(required = false) String subject,
+                                @RequestParam(required = false) String message,
+                                Model model) {
+        // TODO: In a real app, save feedback to database
+        // For now, just show success message
+        model.addAttribute("success", "Thank you for your feedback! We appreciate your input.");
+        return "feedback";
     }
 }
