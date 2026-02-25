@@ -62,6 +62,7 @@
 <div class="container">
     <a href="${pageContext.request.contextPath}/dashboard" class="back-btn">Go back to dashboard</a>
     <h2>Here are the IBM skillsbuild categories to choose from:</h2>
+
     <div class="category-grid">
         <a href="https://skillsbuild.org/students/course-catalog/artificial-intelligence" target="_blank" style="text-decoration: none; color: inherit;">
         <div class="course_button">
@@ -103,8 +104,25 @@
             <p> if you are unsure with what to start learning in the tech realm starting with Explore Emerging Tech is a great way to provide an introduction to six emerging technologies powering today's jobs.</p>
         </div>
     </a>
-    </a>
+
     </div>
+    <h2 class="section-title">Featured Courses</h2>
+
+    <div class="category-grid">
+            <div class="course_button">
+                <h3>Ethical considerations for using generative AI</h3>
+                <p>90 minutes -Intermediate </p>
+            </div>
+            <div class="course_button">
+                <h3>Unleashing the Power of AI Agents</h3>
+                <p>90 minutes - Beginner </p>
+            </div>
+        <div class="course_button">
+            <h3>Turn Ideas Into Prototypes With Vibe Coding</h3>
+            <p>60 minutes - Beginner </p>
+        </div>
+
+
 
 </div>
 </body>
