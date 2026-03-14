@@ -71,24 +71,29 @@ public class MyController {
             return "register";
         }
 
-        // Check if username exists
-        if (userRepository.existsByUsername(username)) {
-            model.addAttribute("error", "Username already exists");
+        try {
+            // Check if username exists
+            if (userRepository.existsByUsername(username)) {
+                model.addAttribute("error", "Username already exists");
+                return "register";
+            }
+
+            // Check if email exists
+            if (userRepository.existsByEmail(email)) {
+                model.addAttribute("error", "Email already exists");
+                return "register";
+            }
+            // Create and save new user
+            String hashed_Password = passwordEncoder.encode(password);
+            User newUser = new User(username, hashed_Password, email, "USER");
+            userRepository.save(newUser);
+
+            model.addAttribute("success", "Registration successful! Please login.");
+            return "register";
+        } catch (Exception e) {
+            model.addAttribute("error", "Registration failed: " + e.getMessage());
             return "register";
         }
-
-        // Check if email exists
-        if (userRepository.existsByEmail(email)) {
-            model.addAttribute("error", "Email already exists");
-            return "register";
-        }
-        // Create and save new user
-        String hashed_Password = passwordEncoder.encode(password);
-        User newUser = new User(username, hashed_Password, email, "USER");
-        userRepository.save(newUser);
-
-        model.addAttribute("success", "Registration successful! Please login.");
-        return "register";
     }
 
     // Handle login POST
@@ -97,13 +102,18 @@ public class MyController {
                               @RequestParam String password,
                               HttpSession session,
                               Model model) {
-        User user = userRepository.findByUsername(username);
+        try {
+            User user = userRepository.findByUsername(username);
 
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            session.setAttribute("user", user);
-            return "redirect:/dashboard";
-        } else {
-            model.addAttribute("error", "Invalid username or password");
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+                session.setAttribute("user", user);
+                return "redirect:/dashboard";
+            } else {
+                model.addAttribute("error", "Invalid username or password");
+                return "login";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Login failed: " + e.getMessage());
             return "login";
         }
     }
@@ -144,48 +154,55 @@ public class MyController {
             return "redirect:/login";
         }
 
-        // Update username if provided and not blank
-        if (username != null && !username.trim().isEmpty()) {
-            if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
-                model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
-                model.addAttribute("error", "Username already exists");
-                return "profile";
+        try {
+            // Update username if provided and not blank
+            if (username != null && !username.trim().isEmpty()) {
+                if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
+                    model.addAttribute("user", user);
+                    model.addAttribute("points", courseSelectionStore.getPoints());
+                    model.addAttribute("error", "Username already exists");
+                    return "profile";
+                }
+                user.setUsername(username);
             }
-            user.setUsername(username);
-        }
 
-        // Update email if provided and not blank
-        if (email != null && !email.trim().isEmpty()) {
-            if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
-                model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
-                model.addAttribute("error", "Email already exists");
-                return "profile";
+            // Update email if provided and not blank
+            if (email != null && !email.trim().isEmpty()) {
+                if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
+                    model.addAttribute("user", user);
+                    model.addAttribute("points", courseSelectionStore.getPoints());
+                    model.addAttribute("error", "Email already exists");
+                    return "profile";
+                }
+                user.setEmail(email);
             }
-            user.setEmail(email);
-        }
 
-        // Update password if provided and not blank
-        if (password != null && !password.trim().isEmpty()) {
-            if (password.length() < 6) {
-                model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
-                model.addAttribute("error", "Password must be at least 6 characters");
-                return "profile";
+            // Update password if provided and not blank
+            if (password != null && !password.trim().isEmpty()) {
+                if (password.length() < 6) {
+                    model.addAttribute("user", user);
+                    model.addAttribute("points", courseSelectionStore.getPoints());
+                    model.addAttribute("error", "Password must be at least 6 characters");
+                    return "profile";
+                }
+                String hashed_Password = passwordEncoder.encode(password);
+                user.setPassword(hashed_Password);
             }
-            String hashed_Password = passwordEncoder.encode(password);
-            user.setPassword(hashed_Password);
+
+            // Save updated user
+            userRepository.save(user);
+            session.setAttribute("user", user);
+
+            model.addAttribute("user", user);
+            model.addAttribute("points", courseSelectionStore.getPoints());
+            model.addAttribute("success", "Profile updated successfully!");
+            return "profile";
+        } catch (Exception e) {
+            model.addAttribute("user", user);
+            model.addAttribute("points", courseSelectionStore.getPoints());
+            model.addAttribute("error", "Update failed: " + e.getMessage());
+            return "profile";
         }
-
-        // Save updated user
-        userRepository.save(user);
-        session.setAttribute("user", user);
-
-        model.addAttribute("user", user);
-        model.addAttribute("points", courseSelectionStore.getPoints());
-        model.addAttribute("success", "Profile updated successfully!");
-        return "profile";
     }
 
     // Logout

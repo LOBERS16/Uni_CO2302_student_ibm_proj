@@ -1,17 +1,8 @@
 package com.group25.backend.model;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "users")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true, nullable = false)
     private String username;
-    @Column(nullable = false)
     private String password;
-    @Column(unique = true, nullable = false)
     private String email;
     private String role;
     private int points = 0;
@@ -21,15 +12,9 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = "USER";
+        this.role = role;
     }
-    //Constructors for above:
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // Constructors for above:
     public void setUsername(String username) {
         this.username = username;
     }
