@@ -128,7 +128,7 @@ public class MyController {
             return "redirect:/login";
         }
         model.addAttribute("user", user);
-        model.addAttribute("points", courseSelectionStore.getPoints());
+        model.addAttribute("points", courseSelectionStore.getFinishedPoints());
         return "profile";  // loads profile.jsp
     }
 
@@ -148,7 +148,7 @@ public class MyController {
         if (username != null && !username.trim().isEmpty()) {
             if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
                 model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
+                model.addAttribute("points", courseSelectionStore.getFinishedPoints());
                 model.addAttribute("error", "Username already exists");
                 return "profile";
             }
@@ -159,7 +159,7 @@ public class MyController {
         if (email != null && !email.trim().isEmpty()) {
             if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
                 model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
+                model.addAttribute("points", courseSelectionStore.getFinishedPoints());
                 model.addAttribute("error", "Email already exists");
                 return "profile";
             }
@@ -170,7 +170,7 @@ public class MyController {
         if (password != null && !password.trim().isEmpty()) {
             if (password.length() < 6) {
                 model.addAttribute("user", user);
-                model.addAttribute("points", courseSelectionStore.getPoints());
+                model.addAttribute("points", courseSelectionStore.getFinishedPoints());
                 model.addAttribute("error", "Password must be at least 6 characters");
                 return "profile";
             }
@@ -183,7 +183,7 @@ public class MyController {
         session.setAttribute("user", user);
 
         model.addAttribute("user", user);
-        model.addAttribute("points", courseSelectionStore.getPoints());
+        model.addAttribute("points", courseSelectionStore.getFinishedPoints());
         model.addAttribute("success", "Profile updated successfully!");
         return "profile";
     }

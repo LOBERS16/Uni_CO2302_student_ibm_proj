@@ -14,10 +14,14 @@
         Course Hub
     </a>
 </h2>
+
 <div style="padding:8px;border:1px solid #ccc;margin-bottom:12px;">
     <strong>${menuState}</strong>
     <span style="float:right;">
         Points: <strong id="pointsTotal">${points}</strong>
+        |
+        Completion: <strong id="completionPercent">${completionPercent}%</strong>
+        (${points}/${totalCourses})
     </span>
 </div>
 
@@ -46,7 +50,10 @@
         <th>Category</th>
         <th>Duration (mins)</th>
         <th>Languages</th>
+        <th>Start</th>
         <th>Done</th>
+        <th>Started At</th>
+        <th>Completed At</th>
     </tr>
 
     <c:forEach var="course" items="${courses}">
@@ -60,23 +67,51 @@
             <td style="text-align:center;">
                 <input
                         type="checkbox"
-                        class="courseTick"
+                        class="startTick"
                         data-code="${course.code}"
-                        <c:if test="${selectedCodes.contains(course.code)}">checked</c:if>
+                        <c:if test="${progressMap[course.code] != null && progressMap[course.code].started}">checked</c:if>
                 />
+            </td>
+
+            <td style="text-align:center;">
+                <input
+                        type="checkbox"
+                        class="finishTick"
+                        data-code="${course.code}"
+                        <c:if test="${progressMap[course.code] != null && progressMap[course.code].finished}">checked</c:if>
+                />
+            </td>
+
+            <td>
+                <c:choose>
+                    <c:when test="${progressMap[course.code] != null && progressMap[course.code].startedAt != null}">
+                        ${progressMap[course.code].startedAtFormatted}
+                    </c:when>
+                    <c:otherwise>-</c:otherwise>
+                </c:choose>
+            </td>
+
+            <td>
+                <c:choose>
+                    <c:when test="${progressMap[course.code] != null && progressMap[course.code].finishedAt != null}">
+                        ${progressMap[course.code].finishedAtFormatted}
+                    </c:when>
+                    <c:otherwise>-</c:otherwise>
+                </c:choose>
             </td>
         </tr>
     </c:forEach>
 
     <c:if test="${empty courses}">
-        <tr><td colspan="6">No courses found.</td></tr>
+        <tr><td colspan="9">No courses found.</td></tr>
     </c:if>
 </table>
 
 <script>
     const totalEl = document.getElementById("pointsTotal");
+    const percentEl = document.getElementById("completionPercent");
 
-    document.querySelectorAll(".courseTick").forEach(cb => {
+    document.querySelectorAll(".startTick").forEach(cb => {
         cb.addEventListener("change", async () => {
             const code = cb.dataset.code;
             const checked = cb.checked;
@@ -85,14 +120,44 @@
             form.append("code", code);
             form.append("checked", checked);
 
-            const resp = await fetch("${pageContext.request.contextPath}/courses_list/tick", {
+            const resp = await fetch("${pageContext.request.contextPath}/courses_list/start", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: form.toString()
             });
 
-            const newTotal = await resp.text();
-            totalEl.textContent = newTotal;
+            const result = await resp.text();
+            const parts = result.split(",");
+
+            totalEl.textContent = parts[0];
+            percentEl.textContent = parts[1] + "%";
+
+            location.reload();
+        });
+    });
+
+    document.querySelectorAll(".finishTick").forEach(cb => {
+        cb.addEventListener("change", async () => {
+            const code = cb.dataset.code;
+            const checked = cb.checked;
+
+            const form = new URLSearchParams();
+            form.append("code", code);
+            form.append("checked", checked);
+
+            const resp = await fetch("${pageContext.request.contextPath}/courses_list/finish", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: form.toString()
+            });
+
+            const result = await resp.text();
+            const parts = result.split(",");
+
+            totalEl.textContent = parts[0];
+            percentEl.textContent = parts[1] + "%";
+
+            location.reload();
         });
     });
 </script>
