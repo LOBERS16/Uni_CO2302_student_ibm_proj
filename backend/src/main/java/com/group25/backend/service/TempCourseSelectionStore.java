@@ -1,34 +1,74 @@
 package com.group25.backend.service;
 
+import com.group25.backend.model.CourseProgress;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TempCourseSelectionStore {
 
-    // Shared "global" set (thread-safe)
-    private final Set<String> selectedCodes = ConcurrentHashMap.newKeySet();
+    private final Map<String, CourseProgress> progressMap = new ConcurrentHashMap<>();
 
-    public void setSelected(String courseCode, boolean selected) {
-        if (selected) selectedCodes.add(courseCode);
-        else selectedCodes.remove(courseCode);
+    public void setStarted(String courseCode, boolean started) {
+        CourseProgress progress = progressMap.computeIfAbsent(courseCode, k -> new CourseProgress());
+
+        if (started) {
+            progress.setStarted(true);
+            if (progress.getStartedAt() == null) {
+                progress.setStartedAt(LocalDateTime.now());
+            }
+        } else {
+            progress.setStarted(false);
+            progress.setStartedAt(null);
+
+            progress.setFinished(false);
+            progress.setFinishedAt(null);
+        }
     }
 
-    public boolean isSelected(String courseCode) {
-        return selectedCodes.contains(courseCode);
+    public void setFinished(String courseCode, boolean finished) {
+        CourseProgress progress = progressMap.computeIfAbsent(courseCode, k -> new CourseProgress());
+
+        if (finished) {
+            if (!progress.isStarted()) {
+                progress.setStarted(true);
+                if (progress.getStartedAt() == null) {
+                    progress.setStartedAt(LocalDateTime.now());
+                }
+            }
+
+            progress.setFinished(true);
+            if (progress.getFinishedAt() == null) {
+                progress.setFinishedAt(LocalDateTime.now());
+            }
+        } else {
+            progress.setFinished(false);
+            progress.setFinishedAt(null);
+        }
     }
 
-    public int getPoints() {
-        return selectedCodes.size();
+    public CourseProgress getProgress(String courseCode) {
+        return progressMap.getOrDefault(courseCode, new CourseProgress());
     }
 
-    public Set<String> getSelectedCodes() {
-        return Set.copyOf(selectedCodes);
+    public Map<String, CourseProgress> getAllProgress() {
+        return Map.copyOf(progressMap);
+    }
+
+    public int getFinishedPoints() {
+        int count = 0;
+        for (CourseProgress progress : progressMap.values()) {
+            if (progress.isFinished()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void clear() {
-        selectedCodes.clear();
+        progressMap.clear();
     }
 }
