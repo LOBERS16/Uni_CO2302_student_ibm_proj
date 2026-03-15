@@ -1,16 +1,14 @@
 package com.group25.backend.controller;
 
-// temp transfer data
-import com.group25.backend.service.TempCourseSelectionStore;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.group25.backend.model.Course;
 import com.group25.backend.service.CourseCatalog;
+import com.group25.backend.service.TempCourseSelectionStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,6 +44,10 @@ public class CourseController {
 
         results.sort(Comparator.comparing(c -> c.getCode().toLowerCase(Locale.ROOT)));
 
+        int points = selectionStore.getFinishedPoints();
+        int totalCourses = courseCatalog.getCourses().size();
+        int completionPercent = (totalCourses == 0) ? 0 : (points * 100) / totalCourses;
+
         String menuState =
                 "Search & Filter"
                         + " | Search=\"" + safe(searchText) + "\""
@@ -60,9 +62,10 @@ public class CourseController {
         model.addAttribute("category", category);
         model.addAttribute("maxDurationMins", maxDurationMins);
 
-        // temp point score
-        model.addAttribute("points", selectionStore.getPoints());
-        model.addAttribute("selectedCodes", selectionStore.getSelectedCodes());
+        model.addAttribute("points", points);
+        model.addAttribute("totalCourses", totalCourses);
+        model.addAttribute("completionPercent", completionPercent);
+        model.addAttribute("progressMap", selectionStore.getAllProgress());
 
         model.addAttribute("categories", List.of(
                 "Artificial Intelligence",
@@ -72,7 +75,7 @@ public class CourseController {
                 "Cloud"
         ));
 
-        return "courses"; // resolves to /WEB-INF/views/courses.jsp if prefix/suffix set
+        return "courses";
     }
 
     private boolean matchesSearch(Course course, String searchText) {
@@ -102,16 +105,35 @@ public class CourseController {
         return (text == null || text.trim().isEmpty()) ? "Any" : text.trim();
     }
 
-    @PostMapping("/courses_list/tick")
+    @PostMapping("/courses_list/start")
     @ResponseBody
-    public int tickCourse(@RequestParam String code, @RequestParam boolean checked) {
-        selectionStore.setSelected(code, checked);
+    public String startCourse(@RequestParam String code, @RequestParam boolean checked) {
+        selectionStore.setStarted(code, checked);
 
-        int points = selectionStore.getPoints();
-        System.out.println("[TICK] code=" + code + " checked=" + checked
+        int points = selectionStore.getFinishedPoints();
+        int totalCourses = courseCatalog.getCourses().size();
+        int completionPercent = (totalCourses == 0) ? 0 : (points * 100) / totalCourses;
+
+        System.out.println("[START] code=" + code + " checked=" + checked
                 + " | points=" + points
-                + " | selected=" + selectionStore.getSelectedCodes());
+                + " | completion=" + completionPercent + "%");
 
-        return points;
+        return points + "," + completionPercent;
+    }
+
+    @PostMapping("/courses_list/finish")
+    @ResponseBody
+    public String finishCourse(@RequestParam String code, @RequestParam boolean checked) {
+        selectionStore.setFinished(code, checked);
+
+        int points = selectionStore.getFinishedPoints();
+        int totalCourses = courseCatalog.getCourses().size();
+        int completionPercent = (totalCourses == 0) ? 0 : (points * 100) / totalCourses;
+
+        System.out.println("[FINISH] code=" + code + " checked=" + checked
+                + " | points=" + points
+                + " | completion=" + completionPercent + "%");
+
+        return points + "," + completionPercent;
     }
 }
