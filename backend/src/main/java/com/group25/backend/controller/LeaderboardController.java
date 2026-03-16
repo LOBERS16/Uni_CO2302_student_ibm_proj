@@ -12,7 +12,7 @@ public class LeaderboardController {
         this.leaderboardService = leaderboardService;
     }
     @GetMapping("/leaderboard")
-    public String showLeaderboard(Model model) {
+    public String showLeaderboard(Model model) throws Exception {
         model.addAttribute("users",leaderboardService.getLeaderboard());
         return "leaderboard";
     }
