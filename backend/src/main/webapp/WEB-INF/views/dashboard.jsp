@@ -163,7 +163,7 @@
         <div class="menu_Card">
             <h3>Competition</h3>
             <p>Compete with friends and check the IBM leaderboard</p>
-            <a href="">Leaderboard</a>
+            <a href="${pageContext.request.contextPath}/leaderboard">Leaderboard</a>
         </div>
 
         <div class="menu_Card">
