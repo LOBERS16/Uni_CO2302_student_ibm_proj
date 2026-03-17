@@ -29,12 +29,12 @@ public class UserRepository {
 
     public String saveUser(User user) throws Exception {
         Firestore db = FirestoreClient.getFirestore();
-        String hashedPassword = encoder.encode(user.getPassword());
+
 
         Map<String, Object> data = new HashMap<>();
         data.put("username", user.getUsername());
         data.put("email", user.getEmail());
-        data.put("password", hashedPassword);
+        data.put("password", user.getPassword());
         data.put("points", 0);
 
         db.collection("users").document(user.getUsername()).set(data).get();
